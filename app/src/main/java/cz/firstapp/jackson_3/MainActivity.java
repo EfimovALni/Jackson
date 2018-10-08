@@ -1,14 +1,14 @@
 package cz.firstapp.jackson_3;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -17,38 +17,55 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonString = "{\"name\":\"Mahesh\", \"age\":21}";
-        String jsonString_2 =   "{\"id\":\"1\",\"level\":\"3\",\"name\":\"KI Group\",\"type\":\"true\"}";
 
-        //map json to student
+        MainActivity mainActivity = new MainActivity();
+
         try {
+            ObjectMapper mapper = new ObjectMapper();
 
-            Student student = mapper.readValue(jsonString, Student.class);
+            Map<String, Object> studentDataMap = new HashMap<String, Object>();
 
-            Log.e("Student\t", student.toString());
+            int[] marks = {4,5,3};
 
-            jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(student);
-            Log.e("Response ", jsonString);
+            Student student = new Student();
+            student.setAge(25);
+            student.setName("Michail");
 
-
-//            Desirialize
-            Sponsors sponsors =  mapper.readValue(jsonString_2, Sponsors.class);
-            Log.e("Desirialize 'sponsors'", "Name: " + sponsors);
-            Log.e("Desirialize 'sponsors'", "Name: " + sponsors.name + "\nid: " + sponsors.id);
+//            Java Object
+            studentDataMap.put("student", student);
+//            Java String
+            studentDataMap.put("name", "Michael Kamar");
+//            Java Boolean
+            studentDataMap.put("verified", Boolean.FALSE);
+//            Array
+            studentDataMap.put("marks", marks);
 
 //            Serialize
-            jsonString_2 = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(sponsors);
-            Log.e("Serialize 'sponsors'", jsonString_2);
+            String jsonString = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(studentDataMap);
+            Log.e("^^^", jsonString);
+            /* Answer:
+            {
+                "name" : "Michael Kamar",
+                    "student" : {
+                "age" : 25,
+                        "name" : "Michail"
+            },
+                "marks" : [ 4, 5, 3 ],
+                "verified" : false
+            }*/
+
+//            DeSerialize
+            studentDataMap = mapper.readValue(jsonString, Map.class);
+            Log.e("-------- ", String.valueOf(studentDataMap.get("name")));
+            /* Answer
+            Michael Kamar*/
 
 
-        } catch (JsonParseException e) {
-            e.printStackTrace();
-        } catch (JsonMappingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
+
     }
 
 
@@ -56,10 +73,16 @@ public class MainActivity extends AppCompatActivity {
 
 
 class Student {
-    private String name;
     private int age;
+    private String name;
+    public Student(){}
 
-    public Student() {
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
     }
 
     public String getName() {
@@ -70,54 +93,11 @@ class Student {
         this.name = name;
     }
 
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public String toString() {
-        return "Student [ name: " + name + ", age: " + age + " ]";
-    }
-}
-
-class Sponsors {
-    String description;
-    int id;
-    int level;
-    String name;
-    boolean type;
-
-    public String getDescription() {
-        return description;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public boolean isType() {
-        return type;
-    }
-
     @Override
     public String toString() {
-        return "sponsors{" +
-                "description='" + description + '\'' +
-                ", id=" + id +
-                ", level=" + level +
+        return "Student{" +
+                "age=" + age +
                 ", name='" + name + '\'' +
-                ", type=" + type +
                 '}';
     }
 }
